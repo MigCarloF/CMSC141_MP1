@@ -1,7 +1,9 @@
 package com.company;
 
+
 import java.io.*;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class CaseSplitter {
 
@@ -39,7 +41,9 @@ public class CaseSplitter {
         String line = x.nextLine();
         boolean error = false;
         int cases;
-        try{
+
+
+        try{ //checks if counter is valid
             cases = Integer.parseInt(line);
         } catch (NullPointerException e1) {
             writeToFile("No data!");
@@ -52,6 +56,9 @@ public class CaseSplitter {
         }
 
         while(x.hasNext() && !error){
+            //TODO delimit the ;
+            line = x.nextLine();
+            StringTokenizer tok = new StringTokenizer(line);
 
         }
 
