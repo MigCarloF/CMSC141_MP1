@@ -15,12 +15,14 @@ public class CodeProper {
 
     private void run() {
         Scanner sc = new Scanner(System.in);
+        String fileName;
+        String allLines = "";
         frw = new FileReadWrite();
         boolean exit = false;
 
         while(true) {
             System.out.print("Input filename and extension (type exit to exit): ");
-            String fileName = sc.nextLine();
+            fileName = sc.nextLine();
 
             if(fileName.equals("exit")){
                 exit = true;
@@ -35,35 +37,24 @@ public class CodeProper {
             }
         }
 
-        if (exit == false){
+        if (!exit && !(frw == null)){
 
             //phase 1 collect number of test cases
             int testCases = collectNumber();
             if (testCases < 0) {
-
+                System.out.println("Invalid Case Numbers");
             } else if (testCases == 0) {
-
+                System.out.println("Lol thanks sir no cases to check");
             } else {
-                //VALID FIRST LINE TODO put code here
-                String caseType = identifyCase();
+                //enter this case if testCases > 0
 
-                StringTokenizer tok = new StringTokenizer(line, ";{");
-
-                if(caseType == "definition") {
-                    System.out.println("DEFINITION!");
-                } else if (caseType == "declaration") {
-                    System.out.println("DECLARATION");
-                    if(isFuncDec()){
-
-                    } else if (isVarDec()) {
-
-                    }
-
-                } else {
-                    //TODO What does this do?
-                    System.out.println("WHATYOU!?");
+                //concats all lines to allLines variable
+                while(frw.hasNext()){
+                    allLines = allLines.concat(frw.readFile()) + " ";
                 }
-                System.out.println(line);
+
+                StringTokenizer tok = new StringTokenizer(allLines, ";{", true);
+                
             }
         } else {
             System.out.println("Thanks!");
