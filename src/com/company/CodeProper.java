@@ -116,7 +116,7 @@ public class CodeProper {
                             System.out.println("INVALID FUNC DEC");
                         }
                     } else {
-                        if (isValidVarDec(currentLine)) {
+                        if (VarDecValidity.isValidVarDec(currentLine)) {
                             frw.writeToFile("VALID VAR DEC");
                             System.out.println("VALID VAR DEC");
                         } else {

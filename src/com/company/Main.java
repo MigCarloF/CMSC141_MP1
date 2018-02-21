@@ -8,12 +8,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+/**
+ * Collaborators:
+ * Miguel Carlo Fernandez
+ * Manolo Codeniera
+ * Dylan Limpag
+ */
+
 public class Main {
 
     public static void main(String[] args) {
         new CodeProper();
 
-        FuncDefValidity.isValidDataType("int");
     }
 
     private static void test() {
