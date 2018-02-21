@@ -9,6 +9,7 @@ public class CodeProper {
 
     FileReadWrite frw;
 
+
     public CodeProper() {
         run();
     }
@@ -18,13 +19,15 @@ public class CodeProper {
         String fileName;
         String allLines = "";
         frw = new FileReadWrite();
+        frw.eraseOutput();
         boolean exit = false;
+        boolean isDef;
 
-        while(true) {
+        while (true) {
             System.out.print("Input filename and extension (type exit to exit): ");
             fileName = sc.nextLine();
 
-            if(fileName.equals("exit")){
+            if (fileName.equals("exit")) {
                 exit = true;
                 break;
             }
@@ -37,7 +40,7 @@ public class CodeProper {
             }
         }
 
-        if (!exit && !(frw == null)){
+        if (!exit && !(frw == null)) {
 
             //phase 1 collect number of test cases
             int testCases = collectNumber();
@@ -49,12 +52,82 @@ public class CodeProper {
                 //enter this case if testCases > 0
 
                 //concats all lines to allLines variable
-                while(frw.hasNext()){
-                    allLines = allLines.concat(frw.readFile()) + " ";
+                while (frw.hasNext()) {
+                    allLines = allLines.concat(frw.readFile());
+                    if(!(allLines.charAt(allLines.length()-1) == ';')){
+                        allLines = allLines + " ";
+                    }
                 }
 
+                //trims the final space of allLines to avoid an exception
+                allLines = deleteFinalSpaces(allLines);
+
                 StringTokenizer tok = new StringTokenizer(allLines, ";{", true);
-                
+                if (tok.countTokens() == 0) {
+                    System.out.println("put tokens pls");
+                }
+
+                //main loop
+                while (tok.hasMoreTokens() && testCases > 0) {
+
+                    isDef = false;
+
+                    testCases--;
+                    String currentLine = tok.nextToken(";{");
+                    if(currentLine.equals(" ")){
+                        break;
+                    } else if (currentLine.equals(";") || currentLine.equals("{")){
+                        frw.writeToFile("YOU CANT DO THAT");
+                        System.out.println("YOU CANT DO THAT");
+                        break;
+                    }
+                    currentLine = deleteFirstSpace(currentLine);
+
+                    //concats the delimiter if split by delimiter and not end of string
+                    if (tok.hasMoreTokens()) {
+                        String nextTok = tok.nextToken();
+                        currentLine = currentLine.concat(nextTok);
+
+                        if (nextTok.equals("{")) { //for definition continuation of closing curly
+                            isDef = true;
+                            if (tok.hasMoreTokens()) {
+                                currentLine = currentLine.concat(tok.nextToken("}")); //concats until }
+                                currentLine = currentLine.concat(tok.nextToken("}")); //concats the delimiter
+                            }
+                        }
+
+                    }
+                    System.out.println(currentLine);
+
+                    if (isDef) {
+                        if (isValidFuncDef(currentLine)) {
+                            frw.writeToFile("VALID FUNC DEF");
+                            System.out.println("VALID FUNC DEF");
+                        } else {
+                            frw.writeToFile("INVALID FUNC DEF");
+                            System.out.println("INVALID FUNC DEF");
+                        }
+                    } else if (isFuncDec(currentLine)) {
+                        if (FuncDecValidity.isValidFuncDec(currentLine)) {
+                            frw.writeToFile("VALID FUNC DEC");
+                            System.out.println("VALID FUNC DEC");
+                        } else {
+                            frw.writeToFile("INVALID FUNC DEC");
+                            System.out.println("INVALID FUNC DEC");
+                        }
+                    } else {
+                        if (isValidVarDec(currentLine)) {
+                            frw.writeToFile("VALID VAR DEC");
+                            System.out.println("VALID VAR DEC");
+                        } else {
+                            frw.writeToFile("INVALID VAR DEC");
+                            System.out.println("INVALID VAR DEC");
+                        }
+                    }
+
+                    System.out.println("");
+                }
+
             }
         } else {
             System.out.println("Thanks!");
@@ -62,50 +135,53 @@ public class CodeProper {
 
     }
 
-    private String identifyCase() {
-        //phase 2 gather string lines until string contains { } or ;
-        //concats per file read
-        boolean definition = false;
-        boolean declaration = false;
-        boolean skipToCurly = false;
+    private boolean isValidFuncDef(String currentLine) {
+        return new Random().nextBoolean();
+    }
 
-        String line = "";
-        int i = 0;
-        while(true && frw.hasNext()) {
-            definition = false;
-            declaration = false;
+    private boolean isValidFuncDec(String currentLine) {
+        return new Random().nextBoolean();
+    }
 
-            line = line.concat(frw.readFile());
+    private boolean isValidVarDec(String currentLine) {
+        return new Random().nextBoolean();
+    }
 
-            for(  ; i < line.length(); i++) { //for loop checks if first case is ; or {
-                if(skipToCurly == false && line.charAt(i) == ';'){
-                    declaration = true;
-                    break;
-                } else if (skipToCurly == false && line.charAt(i) == '{'){
+    //deletes initial space "       hi  " to "hi  "
+    @SuppressWarnings("Duplicates")
+    public String deleteFirstSpace(String line) {
+        String newLine;
+        int i;
 
-                    if(line.contains("}")){ //line must contain } if it opens up with { to be a valid definition
-                        break;
-                    }
-                    definition = true;
-                    skipToCurly = true;
+        if (line.charAt(0) != ' ') {
+            return line;
+        }
 
-                } else if (skipToCurly == true && line.contains("}")) {
-                    definition = true;
-                    break;
-                }
+        for (i = 0; i < line.length(); i++) {
+            if (line.charAt(i) != ' ') {
+                break;
+            }
+
+        }
+        newLine = line.substring(i);
+        return newLine;
+    }
+
+    public String deleteFinalSpaces(String line) {
+        String newLine;
+        int i;
+
+
+        for(i = line.length()-1; i >= 0; i--) {
+            if (line.charAt(i) == ';' || line.charAt(i) == '}') {
+                break;
             }
         }
+        newLine = line.substring(0, ++i);
 
-        if(declaration) {
-            return "declaration";
-        }
-        else if (definition) {
-            return "definition";
-        }
-        else {
-            return "other";
-        }
+        return newLine;
     }
+
     private int collectNumber() { //returns -1 if line is not a number
         String num = frw.readFile();
         try {
@@ -113,18 +189,53 @@ public class CodeProper {
         } catch (NumberFormatException e) {
             return -1;
         }
-     }
-
-    private boolean isFuncDec() {
-        //TODO delete this after combining
-        Random rand = new Random();
-        return rand.nextBoolean();
     }
 
-    private boolean isVarDec() {
-        //TODO delete this after combining
-        Random rand = new Random();
-        return rand.nextBoolean();
+    private boolean isFuncDec(String line) {
+
+        StringTokenizer tokzr = new StringTokenizer(line, "; ", true);
+        String string = tokzr.nextToken();
+        String token = tokzr.nextToken();
+        //checks if what was sent was one whole string until ;
+        if (token.equals(";")) {
+            return false;
+        }
+
+        string = tokzr.nextToken(";");
+        string = string.concat(tokzr.nextToken());
+
+        //for testcase 'int ((x)) = 4;
+        int parCount = 0;
+        boolean countPar = false;
+
+        if (string.charAt(0) == '(') {
+            parCount++;
+            countPar = true;
+        }
+
+        for (int i = 0; i < string.length(); i++) {
+            if (countPar) {
+                if (parCount == 0) {
+                    countPar = false;
+                } else if (string.charAt(i) == '(' && i != 0) {
+                    parCount++;
+                } else if (string.charAt(i) == ')') {
+                    parCount--;
+                } else if (string.charAt(i) == ';') {
+                    return false;
+                }
+            }
+            if (!countPar) {
+                if (string.charAt(i) == ';') {
+                    return false;
+                } else if (string.charAt(i) == '=') { //returns false when = appears first
+                    return false;
+                } else if (string.charAt(i) == '(') {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

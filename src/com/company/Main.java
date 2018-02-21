@@ -12,6 +12,8 @@ public class Main {
 
     public static void main(String[] args) {
         new CodeProper();
+
+        FuncDefValidity.isValidDataType("int");
     }
 
     private static void test() {
